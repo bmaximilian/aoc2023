@@ -22,8 +22,45 @@ describe('day1/task1/findTwoDigitNumber', () => {
             expect(findTwoDigitNumber('treb7uchet')).toBe(77);
         });
 
-        it.skip('should throw an error if the input does not contain a number', () => {
+        it('should throw an error if the input does not contain a number', () => {
             expect(() => findTwoDigitNumber('lqiuvkqgervkj')).toThrowError('Input must contain at least one number');
+        });
+
+        it('should find a written number at the start', () => {
+            expect(findTwoDigitNumber('onexy3')).toBe(13);
+        });
+
+        it('should find a written number in the middle', () => {
+            expect(findTwoDigitNumber('twaaonexy3')).toBe(13);
+        });
+
+        it('should find a written number as last digit', () => {
+            expect(findTwoDigitNumber('3twaaonexy')).toBe(31);
+        });
+
+        it('should find a written number in a string with only one number', () => {
+            expect(findTwoDigitNumber('twaaonexy')).toBe(11);
+        });
+        it('1', () => {
+            expect(findTwoDigitNumber('two1nine')).toBe(29);
+        });
+        it('2', () => {
+            expect(findTwoDigitNumber('eightwothree')).toBe(83);
+        });
+        it('3', () => {
+            expect(findTwoDigitNumber('abcone2threexyz')).toBe(13);
+        });
+        it('4', () => {
+            expect(findTwoDigitNumber('xtwone3four')).toBe(24);
+        });
+        it('5', () => {
+            expect(findTwoDigitNumber('4nineeightseven2')).toBe(42);
+        });
+        it('6', () => {
+            expect(findTwoDigitNumber('zoneight234')).toBe(14);
+        });
+        it('7', () => {
+            expect(findTwoDigitNumber('7pqrstsixteen')).toBe(76);
         });
     });
 });
