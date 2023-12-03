@@ -138,6 +138,14 @@ describe('Pointer', () => {
                 ]);
                 expect(pointer.move().getUncheckedAdjacentNumbers()).toEqual([12]);
             });
+
+            it('should find numbers diagonally', () => {
+                const pointer = new Pointer([
+                    ['.', '#', '.', '.'],
+                    ['.', '.', '1', '2'],
+                ]);
+                expect(pointer.move().getUncheckedAdjacentNumbers()).toEqual([12]);
+            });
         });
     });
 });

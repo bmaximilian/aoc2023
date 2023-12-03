@@ -36,7 +36,7 @@ export class Pointer {
     }
 
     public markCurrentNodeAsChecked(): this {
-        this.checkedNodes.add(this.currentNodeToString());
+        this.checkedNodes.add(this.nodeToString(this.currentNode));
 
         return this;
     }
@@ -50,11 +50,11 @@ export class Pointer {
     }
 
     public hasCurrentNodeBeenChecked(): boolean {
-        return this.checkedNodes.has(this.currentNodeToString());
+        return this.checkedNodes.has(this.nodeToString(this.currentNode));
     }
 
-    private currentNodeToString(): string {
-        const { x, y } = this.currentNode;
+    private nodeToString(node = this.currentNode): string {
+        const { x, y } = node;
         return `${x},${y}`;
     }
 
@@ -72,6 +72,7 @@ export class Pointer {
     }
 
     public getUncheckedAdjacentNumbers(): number[] {
+        this.markCurrentNodeAsChecked();
         if (!this.isCurrentNodeSymbol()) {
             return [];
         }
@@ -83,10 +84,10 @@ export class Pointer {
             { x: this.currentNode.x + 1, y: this.currentNode.y }, // right
             { x: this.currentNode.x, y: this.currentNode.y - 1 }, // top
             { x: this.currentNode.x, y: this.currentNode.y + 1 }, // bottom
-            // { x: this.currentNode.x - 1, y: this.currentNode.y - 1 }, // top-left
-            // { x: this.currentNode.x - 1, y: this.currentNode.y + 1 }, // bottom-left
-            // { x: this.currentNode.x + 1, y: this.currentNode.y - 1 }, // top-right
-            // { x: this.currentNode.x + 1, y: this.currentNode.y + 1 }, // bottom-right
+            { x: this.currentNode.x - 1, y: this.currentNode.y - 1 }, // top-left
+            { x: this.currentNode.x - 1, y: this.currentNode.y + 1 }, // bottom-left
+            { x: this.currentNode.x + 1, y: this.currentNode.y - 1 }, // top-right
+            { x: this.currentNode.x + 1, y: this.currentNode.y + 1 }, // bottom-right
         ];
 
         nodesToCheck.forEach((node) => this.checkNode(node, adjacentNumbers));
@@ -95,7 +96,7 @@ export class Pointer {
     }
 
     private checkNode(node: { x: number; y: number }, adjacentNumbers: number[]): void {
-        if (this.canMoveTo(node)) {
+        if (this.canMoveTo(node) && !this.didCheckTheNode(node)) {
             const startingNode = this.currentNode;
             this.moveTo(node);
 
@@ -105,6 +106,7 @@ export class Pointer {
                 adjacentNumbers.push(partNumber);
             }
 
+            this.markCurrentNodeAsChecked();
             this.moveTo(startingNode);
         }
     }
@@ -129,6 +131,7 @@ export class Pointer {
         while (this.isCurrentNodeDigit()) {
             digits.push(this.getCurrentNode());
             try {
+                this.markCurrentNodeAsChecked();
                 this.move();
             } catch (e) {
                 break;
@@ -140,6 +143,10 @@ export class Pointer {
 
     private canMoveTo(node: { x: number; y: number }): boolean {
         return node.y >= 0 && node.y < this.matrix.length && node.x >= 0 && node.x < this.matrix[node.y].length;
+    }
+
+    private didCheckTheNode(node: { x: number; y: number }): boolean {
+        return this.checkedNodes.has(this.nodeToString(node));
     }
 
     private moveTo(node: { x: number; y: number }): void {
