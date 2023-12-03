@@ -62,6 +62,10 @@ export class Pointer {
         return /[^a-zA-Z0-9\s.]/.test(this.getCurrentNode());
     }
 
+    public isCurrentNodeGear(): boolean {
+        return this.getCurrentNode() === '*';
+    }
+
     public isCurrentNodeDigit(): boolean {
         return /[0-9]/.test(this.getCurrentNode());
     }

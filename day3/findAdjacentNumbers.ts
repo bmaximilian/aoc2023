@@ -22,3 +22,28 @@ export const findAdjacentNumbers = (input: string): number[] => {
 
     return numbers;
 };
+
+export const findGearRatios = (input: string): number[] => {
+    const matrix = convertInputToMatrix(input);
+
+    const gearRatios: number[] = [];
+    const pointer = new Pointer(matrix);
+
+    while (true) {
+        if (pointer.isCurrentNodeGear()) {
+            const adjacentNumbers = pointer.getUncheckedAdjacentNumbers();
+
+            if (adjacentNumbers.length === 2) {
+                gearRatios.push(adjacentNumbers[0] * adjacentNumbers[1]);
+            }
+        }
+
+        try {
+            pointer.move();
+        } catch (e) {
+            break;
+        }
+    }
+
+    return gearRatios;
+};
