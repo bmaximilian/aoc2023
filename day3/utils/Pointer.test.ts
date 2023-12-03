@@ -95,5 +95,49 @@ describe('Pointer', () => {
                 expect(pointer.isCurrentNodeSymbol()).toBe(true);
             });
         });
+
+        describe('getUncheckedAdjacentNumbers', () => {
+            it('should return an empty array if no numbers are found', () => {
+                const pointer = new Pointer([['.', '.']]);
+                expect(pointer.getUncheckedAdjacentNumbers()).toEqual([]);
+            });
+
+            it('should return a single number that is next to the current node', () => {
+                const pointer = new Pointer([['#', '1']]);
+                expect(pointer.getUncheckedAdjacentNumbers()).toEqual([1]);
+            });
+
+            it('should find numbers with multiple digits', () => {
+                const pointer = new Pointer([['#', '1', '2']]);
+                expect(pointer.getUncheckedAdjacentNumbers()).toEqual([12]);
+            });
+
+            it('should return a single number that is below the current node', () => {
+                const pointer = new Pointer([['#'], ['1']]);
+                expect(pointer.getUncheckedAdjacentNumbers()).toEqual([1]);
+            });
+
+            it('should find numbers below nodes with multiple digits', () => {
+                const pointer = new Pointer([
+                    ['#', '.'],
+                    ['1', '2'],
+                ]);
+                expect(pointer.getUncheckedAdjacentNumbers()).toEqual([12]);
+            });
+
+            it('should find numbers left to nodes', () => {
+                const pointer = new Pointer([['1', '2', '#', '.']]);
+                pointer.move().move();
+                expect(pointer.getUncheckedAdjacentNumbers()).toEqual([12]);
+            });
+
+            it('should find numbers below nodes in reverse', () => {
+                const pointer = new Pointer([
+                    ['.', '#'],
+                    ['1', '2'],
+                ]);
+                expect(pointer.move().getUncheckedAdjacentNumbers()).toEqual([12]);
+            });
+        });
     });
 });
