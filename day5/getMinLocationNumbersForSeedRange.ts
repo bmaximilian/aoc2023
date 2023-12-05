@@ -78,19 +78,49 @@ export const getMinLocationNumberForSeedRange = (input: string): number => {
     const seedRanges = getSeedRanges(input);
 
     let minLocationNumber;
+    console.log(`Processing ${seedRanges.length} seed ranges`);
 
-    for (const [start, end] of seedRanges) {
-        const locationNumber = getMinLocationNumberForSeeds(
-            Array.from({ length: end - start }, (_, index) => index + start),
-            maps,
-        );
+    for (let i = 0; i < seedRanges.length; i++) {
+        const [start, end] = seedRanges[i];
+        console.log(`Processing seed range ${i} ${start} ${end}`);
+        const subRanges = [];
+        let subRangePointer = start;
+        while (subRangePointer < end) {
+            const subRangeEnd = Math.min(subRangePointer + 30000000, end);
+            subRanges.push([subRangePointer, subRangeEnd]);
+            subRangePointer = subRangeEnd;
+        }
+        console.log(`Divided into ${subRanges.length} sub ranges`);
 
-        if (!minLocationNumber) {
-            minLocationNumber = locationNumber;
+        let minSubRangeLocationNumber;
+        for (let j = 0; j < subRanges.length; j++) {
+            const [subRangeStart, subRangeEnd] = subRanges[j];
+            const locationNumber = getMinLocationNumberForSeeds(
+                Array.from({ length: subRangeEnd - subRangeStart }, (_, index) => index + subRangeStart),
+                maps,
+            );
+
+            console.log(`${Math.round(((j + 1) / subRanges.length) * 100)}%`);
+
+            if (!minSubRangeLocationNumber) {
+                minSubRangeLocationNumber = locationNumber;
+                continue;
+            }
+
+            minSubRangeLocationNumber = Math.min(minSubRangeLocationNumber, locationNumber);
+        }
+        console.log('Finished processing sub ranges');
+
+        if (!minSubRangeLocationNumber) {
             continue;
         }
 
-        minLocationNumber = Math.min(minLocationNumber, locationNumber);
+        if (!minLocationNumber) {
+            minLocationNumber = minSubRangeLocationNumber;
+            continue;
+        }
+
+        minLocationNumber = Math.min(minLocationNumber, minSubRangeLocationNumber);
     }
 
     if (!minLocationNumber) {
