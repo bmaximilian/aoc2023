@@ -8,7 +8,7 @@ export enum HandType {
     FiveOfAKind = 6,
 }
 
-const cardValueOrder = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+const cardValueOrder = ['J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A'];
 
 export class Hand {
     private readonly cards: string[];
@@ -25,8 +25,11 @@ export class Hand {
     }
 
     private calculateType(): HandType {
+        const jokerCount = this.cards.filter((card) => card === 'J').length;
+        const carsWithoutJokers = this.cards.filter((card) => card !== 'J');
+
         const cardCounts = new Map<string, number>();
-        this.cards.forEach((card) => {
+        carsWithoutJokers.forEach((card) => {
             if (!cardCounts.has(card)) {
                 cardCounts.set(card, 1);
                 return;
@@ -35,6 +38,7 @@ export class Hand {
             cardCounts.set(card, cardCounts.get(card)! + 1);
         });
 
+        const maxCardCount = carsWithoutJokers.length > 0 ? Math.max(...cardCounts.values()) : 0;
         const cardOccurrences = new Map<number, string[]>();
         cardCounts.forEach((count, card) => {
             if (!cardOccurrences.has(count)) {
@@ -44,24 +48,27 @@ export class Hand {
             cardOccurrences.set(count, [...cardOccurrences.get(count)!, card]);
         });
 
-        if (cardOccurrences.has(5)) {
+        if (maxCardCount === 5 || maxCardCount + jokerCount === 5) {
             return HandType.FiveOfAKind;
         }
 
-        if (cardOccurrences.has(4)) {
+        if (maxCardCount === 4 || maxCardCount + jokerCount === 4) {
             return HandType.FourOfAKind;
         }
 
-        if (cardOccurrences.has(3)) {
-            if (cardOccurrences.has(2)) {
+        if (maxCardCount === 3 || maxCardCount + jokerCount === 3) {
+            if (
+                (maxCardCount === 3 && (jokerCount > 1 || cardOccurrences.has(2))) ||
+                (cardOccurrences.get(2)?.length === 2 && jokerCount === 1)
+            ) {
                 return HandType.FullHouse;
             }
 
             return HandType.ThreeOfAKind;
         }
 
-        if (cardOccurrences.has(2)) {
-            if (cardOccurrences.get(2)!.length === 2) {
+        if (cardOccurrences.has(2) || jokerCount > 0) {
+            if (cardOccurrences.get(2)?.length === 2) {
                 return HandType.TwoPairs;
             }
 

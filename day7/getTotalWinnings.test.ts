@@ -10,6 +10,6 @@ describe('getTotalWinnings', () => {
             QQQJA 483
         `;
 
-        expect(getTotalWinnings(input)).toEqual(6440);
+        expect(getTotalWinnings(input)).toEqual(5905);
     });
 });
