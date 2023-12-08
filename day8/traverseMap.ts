@@ -1,43 +1,40 @@
 import { InstructionPointer } from './InstructionPointer';
-import { Node } from './Node';
 import { getNodesFromInput } from './getNodesFromInput';
 
-function printProgress(progress: string) {
-    process.stdout.clearLine(0);
-    process.stdout.cursorTo(0);
-    process.stdout.write(progress);
-}
-
-const allPathsAreAtEnd = (paths: Node[]) => {
-    const pathsInProgress = paths.filter((p) => !p.isEndPoint());
-
-    return pathsInProgress.length === 0;
+const greatestCommonDenominator = (numbers: number[]): number => {
+    return numbers.reduce((a, b) => {
+        let multiple = a;
+        while (multiple % b !== 0) {
+            multiple += a;
+        }
+        return multiple;
+    });
 };
 
 export const traverseMap = (input: string): number => {
-    const pointer = new InstructionPointer(input.trim().split('\n')[0]);
+    const directions = input.trim().split('\n')[0];
     const { starters: parallelPaths } = getNodesFromInput(input);
 
-    let steps = 0;
+    const individualSteps = parallelPaths.map((p) => {
+        const pointer = new InstructionPointer(directions);
+        let currentNode = p;
 
-    while (!allPathsAreAtEnd(parallelPaths)) {
-        steps += 1;
-        if (steps % 10000 === 0) {
-            printProgress(`${steps} steps - ${steps.toString().length} digits`);
-        }
+        let steps = 0;
 
-        const direction = pointer.next() === 'R' ? 'right' : 'left';
-
-        parallelPaths.forEach((path, i) => {
-            const nextNode = path[direction];
+        while (!currentNode.isEndPoint()) {
+            steps += 1;
+            const direction = pointer.next() === 'R' ? 'right' : 'left';
+            const nextNode = currentNode[direction];
 
             if (!nextNode) {
-                throw new Error(`Node ${path.name} has no ${direction} node`);
+                throw new Error(`Node ${currentNode.name} has no ${direction} node`);
             }
 
-            parallelPaths[i] = nextNode;
-        });
-    }
+            currentNode = nextNode;
+        }
 
-    return steps;
+        return steps;
+    });
+
+    return greatestCommonDenominator(individualSteps);
 };
