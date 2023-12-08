@@ -5,10 +5,10 @@ export class Node {
     constructor(public readonly name: string) {}
 
     public isStartPoint(): boolean {
-        return this.name === 'AAA';
+        return this.name.endsWith('A');
     }
 
     public isEndPoint(): boolean {
-        return this.name === 'ZZZ';
+        return this.name.endsWith('Z');
     }
 }

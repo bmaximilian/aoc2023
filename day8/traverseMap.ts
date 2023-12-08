@@ -1,27 +1,42 @@
 import { InstructionPointer } from './InstructionPointer';
+import { Node } from './Node';
 import { getNodesFromInput } from './getNodesFromInput';
+
+function printProgress(progress: string) {
+    process.stdout.clearLine(0);
+    process.stdout.cursorTo(0);
+    process.stdout.write(progress);
+}
+
+const allPathsAreAtEnd = (paths: Node[]) => {
+    const pathsInProgress = paths.filter((p) => !p.isEndPoint());
+
+    return pathsInProgress.length === 0;
+};
 
 export const traverseMap = (input: string): number => {
     const pointer = new InstructionPointer(input.trim().split('\n')[0]);
-    const nodes = getNodesFromInput(input);
+    const { starters: parallelPaths } = getNodesFromInput(input);
 
-    let currentNode = nodes.get('AAA');
     let steps = 0;
 
-    if (!currentNode) {
-        throw new Error('Start node (AAA) not found');
-    }
-
-    while (!currentNode?.isEndPoint()) {
+    while (!allPathsAreAtEnd(parallelPaths)) {
         steps += 1;
-        const prevNodeName = currentNode.name;
+        if (steps % 10000 === 0) {
+            printProgress(`${steps} steps - ${steps.toString().length} digits`);
+        }
+
         const direction = pointer.next() === 'R' ? 'right' : 'left';
 
-        currentNode = currentNode[direction];
+        parallelPaths.forEach((path, i) => {
+            const nextNode = path[direction];
 
-        if (!currentNode) {
-            throw new Error(`Node ${prevNodeName} has no ${direction} node`);
-        }
+            if (!nextNode) {
+                throw new Error(`Node ${path.name} has no ${direction} node`);
+            }
+
+            parallelPaths[i] = nextNode;
+        });
     }
 
     return steps;
