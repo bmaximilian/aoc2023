@@ -1,6 +1,12 @@
 import { getNextValue } from './getNextValue';
+import { getPreviousValue } from './getPreviousValue';
 
-export const predictHistories = (input: string): number => {
+export enum Mode {
+    Future = 'future',
+    Past = 'past',
+}
+
+export const predictHistories = (input: string, mode: Mode): number => {
     return input
         .trim()
         .split('\n')
@@ -10,6 +16,6 @@ export const predictHistories = (input: string): number => {
                 .split(/\s+/)
                 .map((number) => parseInt(number, 10));
 
-            return acc + getNextValue(numbers);
+            return acc + (mode === Mode.Future ? getNextValue(numbers) : getPreviousValue(numbers));
         }, 0);
 };

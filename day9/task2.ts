@@ -5,5 +5,5 @@ import { Mode, predictHistories } from './predictHistories';
 task(() => {
     const input = getInput(__dirname);
 
-    console.log(predictHistories(input, Mode.Future));
+    console.log(predictHistories(input, Mode.Past));
 });
